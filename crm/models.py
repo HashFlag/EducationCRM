@@ -21,7 +21,7 @@ class Customer(models.Model):
     content = models.TextField(verbose_name="咨询详情")
     tags = models.ManyToManyField("Tag",blank=True,null=True)
     status_choices = ((0,'已报名'),(1,'未报名'),)
-    status = models.SmallIntegerField(choices=source_choices)
+    status = models.SmallIntegerField(choices=status_choices)
     consultant = models.ForeignKey("UserProfile", on_delete=models.CASCADE)
     memo = models.TextField(blank=True,null=True)           #备注
     date = models.DateTimeField(auto_now_add=True)

@@ -1,5 +1,5 @@
 
-from django.urls import path,include
+from django.urls import path
 from crm import views
 urlpatterns = [
     path('',views.index,name="sales_index"),
