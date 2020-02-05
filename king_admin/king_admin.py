@@ -7,10 +7,12 @@ enabled_admins = {}  # enabled 开启的
 
 class BaseAdmin(object):
     list_display = []
-    list_filter = []
+    list_filters = []
+    list_per_page = 20
 
 class CustomerAdmin(BaseAdmin):
     list_display = ['qq','name','source','consultant','consult_course','date','status']
+    list_filters = ['source','consultant','consult_course','status']
     #model = models.Customer
 
 class CustomerFollowUpAdmin(BaseAdmin):
