@@ -17,6 +17,17 @@
                         </div>
                       {% endfor %}
                         <button type="SUBMIT" class="btn btn-success">检索</button>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-2" style="margin-left: 15px;margin-right: 15px;">
+                                <input type="search" name="_q" class="form-control" value="{{ search_text }}"
+                                       placeholder="searchby
+{% for search_field in admin_class.search_fields %}{{ search_field }} {% endfor %}">
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="SUBMIT" class="btn btn-success">Search</button>
+                            </div>
+                        </div>
                   </form>
               </div>
 
@@ -42,7 +53,6 @@
                             </tr>
                         {% endfor %}
                   </tbody>
-
               </table>
               <nav>
                   <ul class="pagination">

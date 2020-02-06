@@ -9,12 +9,15 @@ class BaseAdmin(object):
     list_display = []
     list_filters = []
     list_per_page = 20
+    search_fields = []
 
 class CustomerAdmin(BaseAdmin):
     list_display = ['id','qq','name','source','consultant','consult_course','date','status']
     list_filters = ['source','consultant','consult_course','status']
-    #model = models.Customer
     list_per_page = 5
+    search_fields = ['qq','name','consultant__name'] #consultant是外键，所以__name获取具体内容
+    #model = models.Customer
+
 
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer','consultant','date']
