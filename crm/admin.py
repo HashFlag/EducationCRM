@@ -5,11 +5,12 @@ from crm import models
 #自定义表的格式与样式
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('id','qq','source','consultant','content','status','date')
-    list_filter = ('source','consultant','date') #横向展示，筛选，过滤，给出提示
+    list_filter = ('source','consultant','date') #单项选择，列向展示，筛选，过滤，给出提示
     search_fields = ('qq','name') #设置查询功能
     raw_id_fields = ('consult_course',) #以ID的形式显示咨询课程
-    filter_horizontal = ('tags',) #可以横向展示，但不会自动过滤
+    filter_horizontal = ('tags',) #多项选择,可以横向展示，但不会自动过滤
     list_editable = ('status',) #设置可编辑字段
+    list_per_page = 10
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user','name')

@@ -11,9 +11,10 @@ class BaseAdmin(object):
     list_per_page = 20
 
 class CustomerAdmin(BaseAdmin):
-    list_display = ['qq','name','source','consultant','consult_course','date','status']
+    list_display = ['id','qq','name','source','consultant','consult_course','date','status']
     list_filters = ['source','consultant','consult_course','status']
     #model = models.Customer
+    list_per_page = 5
 
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer','consultant','date']

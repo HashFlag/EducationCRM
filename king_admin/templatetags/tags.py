@@ -11,48 +11,53 @@ register = template.Library()
 def render_app_name(admin_class):
     return admin_class.model._meta.verbose_name
 
+#数据展示
 @register.simple_tag
 def get_query_sets(admin_class):
     return admin_class.model.objects.all() #admin_class.model == models.Customer 取出所有的对象
 
+#检索数据展示
 @register.simple_tag
 def build_table_row(obj,admin_class):
     row_ele = ""
     for column in admin_class.list_display:
         field_obj = obj._meta.get_field(column) #获取数据
         if field_obj.choices: #判断是否为空
-            column_data = getattr(obj,"get_%s_display"%(column))() #解决source显示数字的问题
+            column_data = getattr(obj,"get_%s_display"%(column))() #解决tbody中source显示数字的问题
         else:
             column_data = getattr(obj,column)
         row_ele += "<td>%s</td>"%(column_data)
     return mark_safe(row_ele)
 
+#分页
 @register.simple_tag
-def render_page_ele(loop_counter,query_sets,filter_condtions):
+def build_paginators(query_sets,filter_condtions,previous_orderby):
+    ''' 返回整个分页元素 '''
+    page_btns = ""
     filters = ''
-    for k,v in filter_condtions.items():
-        filters += "&%s=%s" %(k,v)
-    # 代表这是前2页 or 最后2页的显示
-    if loop_counter<3 or loop_counter > query_sets.paginator.num_pages-2 :
-        ele_class = ""
-        # query_sets.number 是后台获取的当前的page页的页数；
-        # loop_counter是循环的query_sets.paginator.page_range的页数
-        if query_sets.number == loop_counter:
-            ele_class = "active"
-        ele = '''<li class="%s"><a href="?page=%s%s">%s</a></li>''' %(ele_class,loop_counter,filters,loop_counter)
-        return mark_safe(ele)
-    #显示中间的页数
-    if abs(query_sets.number - loop_counter) <= 1:
-        ele_class = ""
-        if query_sets.number == loop_counter:
-            ele_class = "active"
-        #filters实现检索后页面的数据的分页
-        ele = '''<li class="%s"><a href="?page=%s%s">%s</a></li>''' %(ele_class,loop_counter,filters,loop_counter)
-        return mark_safe(ele)
-    else:
-        return '...'
-    return ''
+    for k, v in filter_condtions.items():
+        filters += "&%s=%s" % (k, v)
+    #标志位
+    added_dot_ele = False
+    for page_num in query_sets.paginator.page_range:
+        #代表这是前2页 or 最后2页的显示  显示前后页：把小于或大于一页的都显示出来
+        if page_num<3 or page_num>query_sets.paginator.num_pages-2 or \
+                abs(query_sets.number - page_num) <= 1:
+            ele_class = ""
+            # query_sets.number 是后台获取的当前的page页的页数；
+            if query_sets.number == page_num:
+                added_dot_ele = False
+                ele_class = "active"
+            # filters实现检索后页面的数据的分页
+            page_btns += '''<li class="%s"><a href="?page=%s%s&o=%s">%s</a></li>''' % (
+            ele_class, page_num, filters,previous_orderby, page_num)
+        else: #显示...
+            if added_dot_ele == False:
+                page_btns += '<li><a>...</a></li>'
+                added_dot_ele = True
+    return mark_safe(page_btns)
 
+#信息检索选项栏
 @register.simple_tag
 def render_filter_ele(condtion,admin_class,filter_condtions):
     select_ele = ''' <select class="form-control" name='%s'><option value=''>----</options> ''' %condtion
@@ -74,6 +79,28 @@ def render_filter_ele(condtion,admin_class,filter_condtions):
             selected = ''
     select_ele += "</select>"
     return mark_safe(select_ele)
+#排序
+@register.simple_tag
+def build_table_header_column(column,orderby_key,filter_condtions):
+    ele = '''<th><a href="?{filters}&o={orderby_key}">{column}</a>{sort_icon}</th>'''
+    filters = ''
+    for k, v in filter_condtions.items():
+        filters += "&%s=%s" % (k, v)
+    if orderby_key: #判断orderby_key是否为None
+        if orderby_key.startswith("-"):
+            sort_icon='<span class="glyphicon glyphicon-chevron-up"></span>'
+        else:
+            sort_icon = '<span class="glyphicon glyphicon-chevron-down"></span>'
+        if orderby_key.strip("-")==column: #排序的字段
+            orderby_key = orderby_key
+        else:        #未排序的字段
+            orderby_key = column
+            sort_icon = ''
+    else:
+        orderby_key = column
+        sort_icon = ''
+    ele = ele.format(orderby_key=orderby_key,filters=filters,column=column,sort_icon=sort_icon)# 格式化
+    return mark_safe(ele)
 
 
 
