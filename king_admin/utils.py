@@ -31,7 +31,7 @@ def table_search(request,admin_class,object_list):
     if search_key:
         q_obj = Q()
         q_obj.connector = "OR"
-        for column in admin_class.search_fields:
+        for column in admin_class.search_fields: # 注：utils.py文件外键属性要加__name获取name
             q_obj.children.append(("%s__contains"%column,search_key)) #前面是字段名，后面是字段值
         res = object_list.filter(q_obj)
     else:

@@ -30,6 +30,7 @@ class Customer(models.Model):
     class Meta:
         verbose_name = "客户表"
         verbose_name_plural = "客户表"
+        ordering = ['id'] #模型对象返回的记录结果集是按照这个字段排序的。(着重使用，不然会出问题)
 
 class Tag(models.Model):
     ''' 标签 '''

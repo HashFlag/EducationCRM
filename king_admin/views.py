@@ -2,6 +2,7 @@ from django.shortcuts import render
 from king_admin import king_admin
 from king_admin.utils import table_filter,table_sort,table_search
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
+from king_admin.forms import creatr_model_form
 # Create your views here.
 def index(request):
     #print(king_admin.enabled_admins['crm']['customer'].model)
@@ -32,6 +33,16 @@ def display_table_objs(request,app_name,table_name):
                                                         "orderby_key":orderby_key,
                                                         "previous_orderby":request.GET.get("o",""),
                                                         "search_text":request.GET.get("_q","")})
+
+def table_obj_change(request,app_name,table_name,obj_id):
+    admin_class = king_admin.enabled_admins[app_name][table_name]
+    model_form_class = creatr_model_form(request,admin_class)
+    form_obj = model_form_class()
+
+    return render(request,"king_admin/table_obj_change.html",{"form_obj":form_obj})
+
+
+
 
 
 

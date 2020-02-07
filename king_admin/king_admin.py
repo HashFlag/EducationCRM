@@ -13,9 +13,9 @@ class BaseAdmin(object):
 
 class CustomerAdmin(BaseAdmin):
     list_display = ['id','qq','name','source','consultant','consult_course','date','status']
-    list_filters = ['source','consultant','consult_course','status']
+    list_filters = ['source','consultant','consult_course','status','date'] #'source'和'date'都需要过滤
     list_per_page = 5
-    search_fields = ['qq','name','consultant__name'] #consultant是外键，所以__name获取具体内容
+    search_fields = ['qq','name'] #consultant是外键，所以__name获取具体内容
     #model = models.Customer
 
 

@@ -10,10 +10,10 @@
           <div class="panel-body">
               <div class="row">
                   <form class="" method="get">
-                      {% for condtion in admin_class.list_filters %}
+                      {% for filter_field in admin_class.list_filters %}
                         <div class="col-lg-2">
-                            <span>{{ condtion }}</span>
-                            {% render_filter_ele condtion admin_class filter_condtions %}
+                            <span>{{ filter_field }}</span>
+                            {% render_filter_ele filter_field admin_class filter_condtions %}
                         </div>
                       {% endfor %}
                         <button type="SUBMIT" class="btn btn-success">检索</button>
@@ -21,8 +21,7 @@
                         <div class="row">
                             <div class="col-lg-2" style="margin-left: 15px;margin-right: 15px;">
                                 <input type="search" name="_q" class="form-control" value="{{ search_text }}"
-                                       placeholder="searchby
-{% for search_field in admin_class.search_fields %}{{ search_field }} {% endfor %}">
+                                       placeholder="search.{% for search_field in admin_class.search_fields %}{{ search_field }}.{% endfor %}">
                             </div>
                             <div class="col-lg-2">
                                 <button type="SUBMIT" class="btn btn-success">Search</button>
@@ -48,7 +47,7 @@
 {#                    {% get_query_sets admin_class as query_sets%} <!--给他admin_class的返回值起一个别名query_set -->#}
                         {% for obj in query_sets %}  <!-- obj是一个对象 -->
                             <tr>
-                                {% build_table_row obj admin_class %}
+                                {% build_table_row request obj admin_class %}
                                 {# <td>{{ obj }}</td> #}
                             </tr>
                         {% endfor %}
