@@ -10,17 +10,22 @@ class BaseAdmin(object):
     list_filters = []
     list_per_page = 20
     search_fields = []
-
+    filter_horizontal = ()
+    ordering = None
 class CustomerAdmin(BaseAdmin):
     list_display = ['id','qq','name','source','consultant','consult_course','date','status']
     list_filters = ['source','consultant','consult_course','status','date'] #'source'和'date'都需要过滤
     list_per_page = 5
     search_fields = ['qq','name'] #consultant是外键，所以__name获取具体内容
+    filter_horizontal = ('tags',)
     #model = models.Customer
 
 
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer','consultant','date']
+
+class UserProfileAdmin(BaseAdmin):
+    list_display = ['id', 'name']
 
 def register(model_class,admin_class=None):
     if model_class._meta.app_label not in enabled_admins: #找到并处理app的名字（例：crm）
@@ -30,6 +35,7 @@ def register(model_class,admin_class=None):
 
 register(models.Customer,CustomerAdmin)
 register(models.CustomerFollowUp,CustomerFollowUpAdmin)
+register(models.UserProfile,UserProfileAdmin)
 
 
 

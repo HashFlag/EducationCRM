@@ -1,6 +1,43 @@
 {% extends "king_admin/table_index.html" %}
+{% load tags %}
+<!-- css Jquery里面有默认属性!important作用是优先height: 300px;使用 -->
+{% block extra-css-resources %}
+    <style type="text/css">
+        .filter-select-box{
+            width: 100%;
+            height: 150px !important;
+            border-radius:4px;
+        }
+    </style>
+{% endblock %}
+
 {% block container %}
-    {{ form_obj }}
+{#    {{ form_obj }}#}
+    <form class="form-horizontal" role="form" method="post">
+        {% csrf_token %}
+        <span style="color:red">{{ form_obj.errors }}</span>
+        {% for field in form_obj %}
+          <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label" style="font-weight: normal">
+                {% if field.field.required %} <!-- 判断是否是必填 -->
+                    <b>{{ field.label }}</b>
+                {% else %}
+                    {{ field.label }}
+                {% endif %}
+
+            </label>
+            <div class="col-sm-6">
+                {{ field }}
+            </div>
+          </div>
+        {% endfor %}
+        <div class="form-group">
+            <div class="col-md-10 col-sm-10 ">
+                <a class="btn btn-danger" href="{% url 'obj_delete' app_name table_name form_obj.instance.id %}">Delete</a>
+                <button type="submit" class="btn btn-success pull-right">Save</button>
+            </div>
+        </div>
+    </form>
 {% endblock %}
 
 

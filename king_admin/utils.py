@@ -12,6 +12,7 @@ def table_filter(request,admin_class):
             continue
         if v:
             filter_conditions[k]=v
+            #如若出现未排序现象可以在filter()后面加.order_by("id")
     return admin_class.model.objects.filter(**filter_conditions),filter_conditions
 #排序
 def table_sort(request,admin_class,object_list):

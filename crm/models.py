@@ -26,12 +26,11 @@ class Customer(models.Model):
     memo = models.TextField(blank=True,null=True)           #备注
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.qq
+        return "<%s %s>"%(self.qq,self.name)
     class Meta:
         verbose_name = "客户表"
         verbose_name_plural = "客户表"
-        ordering = ['id'] #模型对象返回的记录结果集是按照这个字段排序的。(着重使用，不然会出问题)
-
+        ordering = ['id']  # 模型对象返回的记录结果集是按照这个字段排序的。(着重使用，不然会出问题)
 class Tag(models.Model):
     ''' 标签 '''
     name = models.CharField(unique=True,max_length=32)
