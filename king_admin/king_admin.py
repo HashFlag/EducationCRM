@@ -3,6 +3,7 @@
 #-*- coding:utf-8 -*-
 # 制定前端模板（模拟Django-Admin）
 from crm import models
+from django.shortcuts import render,redirect
 enabled_admins = {}  # enabled 开启的
 
 class BaseAdmin(object):
@@ -12,14 +13,28 @@ class BaseAdmin(object):
     search_fields = []
     filter_horizontal = ()
     ordering = None
+    actions = ["delete_seleted_objs",] #可以写任何功能(此功能是关于全部的)
+    def delete_seleted_objs(self,request,querysets):
+        app_name = self.model._meta.app_label
+        table_name = self.model._meta.model_name
+        if request.POST.get("delete_confirm") == "yes":
+            querysets.delete()
+            return redirect("/king_admin/%s/%s/"%(app_name,table_name))
+        selected_ids = ','.join([str(i.id) for i in querysets])
+        return render(request,"king_admin/table_obj_delete.html",{"obj":querysets,
+                                                                  "admin_class":self,
+                                                                  "app_name":app_name,
+                                                                  "table_name":table_name,
+                                                                  "selected_ids":selected_ids,
+                                                                  "action":request._admin_action})
 class CustomerAdmin(BaseAdmin):
     list_display = ['id','qq','name','source','consultant','consult_course','date','status']
     list_filters = ['source','consultant','consult_course','status','date'] #'source'和'date'都需要过滤
     list_per_page = 5
     search_fields = ['qq','name'] #consultant是外键，所以__name获取具体内容
-    filter_horizontal = ('tags',)
+    filter_horizontal = ('tags',) #多选框
     #model = models.Customer
-
+    #可以自定制actions(只针对当前表格)
 
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer','consultant','date']

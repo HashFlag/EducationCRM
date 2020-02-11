@@ -1,5 +1,5 @@
 from django.contrib import admin
-
+from django.shortcuts import render
 from crm import models
 # Register your models here.
 #自定义表的格式与样式
@@ -14,6 +14,10 @@ class CustomerAdmin(admin.ModelAdmin):
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user','name')
+    # actions = ["test_action",]
+    # def test_action(self,arg1,arg2): #自定制action
+    #     print('test action:',self,arg1,arg2)
+    #     return render("king_admin/table_index.html")
 
 # 使用Django-Admin默认的方式
 admin.site.register(models.Customer,CustomerAdmin)

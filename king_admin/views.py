@@ -11,6 +11,17 @@ def index(request):
 #数据展示
 def display_table_objs(request,app_name,table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
+    if request.method == "POST":#actions来了
+        selected_ids = request.POST.get("selected_ids")
+        action = request.POST.get("action")
+        if selected_ids:
+            selected_objs = admin_class.model.objects.filter(id__in=selected_ids.split(','))
+        else:
+            raise KeyError("No object selected.")
+        if hasattr(admin_class,action): #如果对象有该属性返回 True，否则返回 False。
+            actions_func = getattr(admin_class,action)
+            request._admin_action = action
+            return actions_func(admin_class,request,selected_objs)
     object_list,filter_condtions = table_filter(request,admin_class)
     object_list,orderby_key = table_sort(request, admin_class, object_list)#排序后的结果
     #Django 内置的分页器Paginator(数据集合，显示条数)
@@ -72,8 +83,7 @@ def table_obj_delete(request,app_name,table_name,obj_id):
     return render(request,"king_admin/table_obj_delete.html",{"obj":obj,
                                                               "admin_class":admin_class,
                                                               "app_name":app_name,
-                                                              "table_name":table_name
-                                                              })
+                                                              "table_name":table_name})
 
 
 
