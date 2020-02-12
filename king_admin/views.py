@@ -63,7 +63,7 @@ def table_obj_change(request,app_name,table_name,obj_id):
     model_form_class = creatr_model_form(request,admin_class)
     obj = admin_class.model.objects.get(id=obj_id) #数据库取出对象
     if request.method == "POST":
-        form_obj = model_form_class(request.POST,instance=obj)
+        form_obj = model_form_class(request.POST,instance=obj)#更新
         if form_obj.is_valid():
             form_obj.save()#保存数据到数据库
     else:
@@ -72,14 +72,15 @@ def table_obj_change(request,app_name,table_name,obj_id):
                                                               "admin_class":admin_class,
                                                               "app_name":app_name,
                                                               "table_name":table_name})
-
 #删除
 def table_obj_delete(request,app_name,table_name,obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     obj = admin_class.model.objects.get(id=obj_id)
+
     if request.method == "POST":
         obj.delete()
         return redirect("/king_admin/%s/%s"%(app_name,table_name))
+    obj = [obj,]
     return render(request,"king_admin/table_obj_delete.html",{"obj":obj,
                                                               "admin_class":admin_class,
                                                               "app_name":app_name,

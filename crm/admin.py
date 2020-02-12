@@ -11,6 +11,7 @@ class CustomerAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',) #多项选择,可以横向展示，但不会自动过滤
     list_editable = ('status',) #设置可编辑字段
     list_per_page = 10
+    #readonly_fields = ('qq',"consultant") #不可修改选项
 
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user','name')

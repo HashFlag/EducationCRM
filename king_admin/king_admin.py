@@ -11,9 +11,10 @@ class BaseAdmin(object):
     list_filters = []
     list_per_page = 20
     search_fields = []
-    filter_horizontal = ()
+    filter_horizontal = []
     ordering = None
-    actions = ["delete_seleted_objs",] #可以写任何功能(此功能是关于全部的)
+    readonly_fields = []
+    actions = ["delete_seleted_objs","default_form_validation",] #可以写任何功能(此功能是关于全部的)
     def delete_seleted_objs(self,request,querysets):
         app_name = self.model._meta.app_label
         table_name = self.model._meta.model_name
@@ -27,12 +28,17 @@ class BaseAdmin(object):
                                                                   "table_name":table_name,
                                                                   "selected_ids":selected_ids,
                                                                   "action":request._admin_action})
+    def default_form_validation(self):#自定义设置中预留一个钩子
+        ''' 用户可以在此进行自定义的表单验证，相当于django form的clean方法 '''
+        print("---customer validation",self)
+
 class CustomerAdmin(BaseAdmin):
     list_display = ['id','qq','name','source','consultant','consult_course','date','status']
     list_filters = ['source','consultant','consult_course','status','date'] #'source'和'date'都需要过滤
     list_per_page = 5
     search_fields = ['qq','name'] #consultant是外键，所以__name获取具体内容
-    filter_horizontal = ('tags',) #多选框
+    filter_horizontal = ['tags'] #多选框
+    readonly_fields = ['qq',"consultant"]
     #model = models.Customer
     #可以自定制actions(只针对当前表格)
 

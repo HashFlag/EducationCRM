@@ -13,7 +13,7 @@
 
 {% block container %}
 {#    {{ form_obj }}#}
-    <form class="form-horizontal" role="form" method="post">
+    <form class="form-horizontal" role="form" method="post" onsubmit="return SelectAllChosenData()">
         {% csrf_token %}
         <span style="color:red">{{ form_obj.errors }}</span>
         {% for field in form_obj %}
@@ -31,12 +31,21 @@
           </div>
         {% endfor %}
         <div class="form-group">
-            <div class="col-md-10 col-sm-10 ">
-                <a class="btn btn-danger" href="{% url 'obj_delete' app_name table_name form_obj.instance.id %}">Delete</a>
+            <div class="col-md-10 col-sm-10">
+                {% block obj_delete %}
+                    <a class="btn btn-danger" href="{% url 'obj_delete' app_name table_name form_obj.instance.id %}">Delete</a>
+                {% endblock %}
                 <button type="submit" class="btn btn-success pull-right">Save</button>
             </div>
         </div>
     </form>
+    <script>
+        function SelectAllChosenData(){
+            // remove all disabled attrs
+            $("form").find("[disabled]").removeAttr("disabled");
+            return true;
+        }
+    </script>
 {% endblock %}
 
 
