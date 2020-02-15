@@ -56,7 +56,7 @@ class CustomerAdmin(BaseAdmin):
     #     if not self.cleaned_data["name"]:
     #         self.add_error("name","cannot be null")
     def enroll(self):
-        print("enroll",self.instance)
+        # print("enroll",self.instance)
         return '''<a href="%s/enrollment/">报名</a>'''%self.instance.id
     enroll.display_name = "报名链接"
 class CustomerFollowUpAdmin(BaseAdmin):

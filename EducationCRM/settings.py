@@ -132,6 +132,7 @@ STATIC_URL = '/statics/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,"statics"),
 ]
-
+#自定义用户验证配置
 AUTH_USER_MODEL = 'crm.UserProfile'
-
+#设置页面返回路径的默认值如果不设置默认返回：/accounts/login/
+LOGIN_URL = "/account/login/"

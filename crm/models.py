@@ -236,6 +236,7 @@ class UserProfile(AbstractBaseUser,PermissionsMixin):
     )
     name = models.CharField(max_length=32)
     password=models.CharField(_('password'),max_length=128,help_text=mark_safe('''<a href='password/'>修改密码</a>'''))
+    roles = models.ManyToManyField("Role",blank=True,null=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 

@@ -3,12 +3,15 @@ from king_admin import king_admin
 from king_admin.utils import table_filter,table_sort,table_search
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 from king_admin.forms import creatr_model_form
+from django.contrib.auth.decorators import login_required #页面管理权限
 # Create your views here.
 #表单展示
+@login_required
 def index(request):
     #print(king_admin.enabled_admins['crm']['customer'].model)
     return render(request, "king_admin/table_index.html", {'table_list':king_admin.enabled_admins})
 #数据展示
+@login_required
 def display_table_objs(request,app_name,table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     if request.method == "POST": #定制的actions来了
@@ -46,6 +49,7 @@ def display_table_objs(request,app_name,table_name):
                                                         "previous_orderby":request.GET.get("o",""),
                                                         "search_text":request.GET.get("_q","")})
 #添加
+@login_required
 def table_obj_add(request,app_name,table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     admin_class.is_add_form = True
@@ -59,6 +63,7 @@ def table_obj_add(request,app_name,table_name):
         form_obj = model_form_class()
     return render(request,"king_admin/table_obj_add.html",{"form_obj":form_obj})
 #修改
+@login_required
 def table_obj_change(request,app_name,table_name,obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     model_form_class = creatr_model_form(request,admin_class)
@@ -74,6 +79,7 @@ def table_obj_change(request,app_name,table_name,obj_id):
                                                               "app_name":app_name,
                                                               "table_name":table_name})
 #删除
+@login_required
 def table_obj_delete(request,app_name,table_name,obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     obj = admin_class.model.objects.get(id=obj_id)
@@ -92,6 +98,8 @@ def table_obj_delete(request,app_name,table_name,obj_id):
                                                               "app_name":app_name,
                                                               "table_name":table_name,
                                                               "errors":errors})
+@login_required
+#用户密码修改
 def password_reset(request,app_name,table_name,obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     model_form_class = creatr_model_form(request, admin_class)
