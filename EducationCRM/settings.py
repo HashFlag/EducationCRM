@@ -84,6 +84,10 @@ DATABASES = {
         'PASSWORD':'1234',
         'HOST':'localhost',
         'PORT':'3306',
+        'OPTIONS': {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
+
     }
 }
 
@@ -129,5 +133,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR,"statics"),
 ]
 
-
+AUTH_USER_MODEL = 'crm.UserProfile'
 

@@ -6,7 +6,9 @@
           <div class="panel-heading">
               <h3 class="panel-title">
                   {% get_model_name admin_class %}
+                  {% if not admin_class.readonly_table %}
                   <a href="{{ request.path }}add/" class="pull-right">Add</a>
+                  {% endif %}
               </h3>
           </div>
           <div class="panel-body">
@@ -18,13 +20,13 @@
                             {% render_filter_ele filter_field admin_class filter_condtions %}
                         </div>
                       {% endfor %}
-                        <button type="SUBMIT" class="btn btn-success">检索</button>
+                        <button type="SUBMIT" class="btn btn-info">检索</button>
                         <hr>
                         <div class="col-lg-3 col-md-3">
                             <input type="search" name="_q" class="form-control" value="{{ search_text }}"
                                    placeholder="search.{% for search_field in admin_class.search_fields %}{{ search_field }}.{% endfor %}">
                         </div>
-                        <button type="SUBMIT" class="btn btn-success col-lg-1 col-md-1">Search</button>
+                        <button type="SUBMIT" class="btn btn-info col-lg-1 col-md-1">Search</button>
                   </form>
               </div>
               <div class="row" style="margin-top: 10px;">
@@ -38,7 +40,7 @@
                               {% endfor %}
                           </select>
                       </div>
-                      <button type="submit" class="btn btn-success" onclick="ActionSubmin()">Go</button>
+                      <button type="submit" class="btn btn-info" onclick="ActionSubmin()">Go</button>
                   </form>
               </div>
               <table class="table table-hover">
@@ -46,7 +48,7 @@
                     <tr>
                         <th style="width: 30px" ><input type="checkbox" onclick="CheckAllToggle(this)"></th>
                         {% for column in admin_class.list_display %}
-                            {% build_table_header_column column orderby_key filter_condtions %}
+                            {% build_table_header_column column orderby_key filter_condtions admin_class %}
                         {% endfor %}
                     </tr>
                   </thead>
@@ -72,7 +74,7 @@
                       {% if query_sets.has_previous %}
                           <li class=""><a href="?page={{ query_sets.previous_page_number }}">上页</a></li>
                       {% endif %}
-                      {% build_paginators query_sets filter_condtions previous_orderby%}
+                      {% build_paginators query_sets filter_condtions previous_orderby %}
                       {% if query_sets.has_next %}
                           <li class=""><a href="?page={{ query_sets.next_page_number }}">下页</a></li>
                       {% endif %}

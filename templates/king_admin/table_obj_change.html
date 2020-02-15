@@ -27,17 +27,22 @@
             </label>
             <div class="col-sm-6">
                 {{ field }}
+                <span style="color: #aaaaaa">{{ field.help_text }}</span>
+                <span style="color: red">{{ field.errors.as_text }}</span>
             </div>
           </div>
         {% endfor %}
+        <!-- 自行定义前端禁止或后端禁止开关,前端可以用 if not 不过会出现save不显示的bug -->
+{#        {% if not admin_class.readonly_table %}  #}
         <div class="form-group">
             <div class="col-md-10 col-sm-10">
                 {% block obj_delete %}
                     <a class="btn btn-danger" href="{% url 'obj_delete' app_name table_name form_obj.instance.id %}">Delete</a>
                 {% endblock %}
-                <button type="submit" class="btn btn-success pull-right">Save</button>
+                <button type="submit" class="btn btn-info pull-right">Save</button>
             </div>
         </div>
+{#        {% endif %}  #}
     </form>
     <script>
         function SelectAllChosenData(){

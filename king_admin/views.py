@@ -11,7 +11,7 @@ def index(request):
 #数据展示
 def display_table_objs(request,app_name,table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
-    if request.method == "POST":#actions来了
+    if request.method == "POST": #定制的actions来了
         selected_ids = request.POST.get("selected_ids")
         action = request.POST.get("action")
         if selected_ids:
@@ -48,12 +48,13 @@ def display_table_objs(request,app_name,table_name):
 #添加
 def table_obj_add(request,app_name,table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
-    model_form_class = creatr_model_form(request, admin_class)
+    admin_class.is_add_form = True
+    model_form_class = creatr_model_form(request,admin_class)
     if request.method == "POST":
         form_obj = model_form_class(request.POST)
         if form_obj.is_valid():
             form_obj.save() # 保存数据到数据库
-            return redirect(request.path.replace("/add",""))
+            return redirect(request.path.replace("/add/","/"))
     else:
         form_obj = model_form_class()
     return render(request,"king_admin/table_obj_add.html",{"form_obj":form_obj})
@@ -76,18 +77,40 @@ def table_obj_change(request,app_name,table_name,obj_id):
 def table_obj_delete(request,app_name,table_name,obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     obj = admin_class.model.objects.get(id=obj_id)
-
+    if admin_class.readonly_table:
+        errors = {"readonly_table":"table is readonly,obj [%s] cannot be deleted"%obj}
+    else:
+        errors = {}
     if request.method == "POST":
-        obj.delete()
-        return redirect("/king_admin/%s/%s"%(app_name,table_name))
+        if not admin_class.readonly_table:
+            print("admin_class:", admin_class.readonly_table)
+            obj.delete()
+            return redirect("/king_admin/%s/%s"%(app_name,table_name))
     obj = [obj,]
     return render(request,"king_admin/table_obj_delete.html",{"obj":obj,
                                                               "admin_class":admin_class,
                                                               "app_name":app_name,
-                                                              "table_name":table_name})
-
-
-
+                                                              "table_name":table_name,
+                                                              "errors":errors})
+def password_reset(request,app_name,table_name,obj_id):
+    admin_class = king_admin.enabled_admins[app_name][table_name]
+    model_form_class = creatr_model_form(request, admin_class)
+    obj = admin_class.model.objects.get(id=obj_id) # 数据库取出对象
+    errors = {}
+    if request.method == "POST":
+        _password1 = request.POST.get("password1")
+        _password2 = request.POST.get("password2")
+        if _password1 == _password2:
+            if len(_password2) > 3:
+                obj.set_password(_password1)
+                obj.save()
+                return redirect(request.path.rstrip("password/"))
+            else:
+                errors["password_too_short"] = "must not less than 4 letters"
+        else:
+            errors['invalid_password'] = "Passwords are not the same"
+    return render(request,"king_admin/password_reset.html",{"obj":obj,
+                                                            "errors":errors})
 
 
 

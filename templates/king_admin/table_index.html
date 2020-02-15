@@ -13,7 +13,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">{{ request.user }}</a></li>
+            <li><a href="#">{{ request.user.name }}</a></li>
           </ul>
         </div>
       </div>
@@ -23,8 +23,7 @@
         <div class="row">
             <div class="panel panel-info">
               <div class="panel-heading">
-                <h3 class="panel-title">134</h3>
-
+                <h3 class="panel-title">Panel title</h3>
               </div>
               <div class="panel-body">
                   {% for app_name,app_tables in table_list.items %}

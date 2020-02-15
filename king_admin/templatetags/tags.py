@@ -4,6 +4,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 from django.utils.timezone import datetime,timedelta
+from django.core.exceptions import FieldDoesNotExist
 #timezone表示使用此软件的时间
 #注册我们自定义的标签，只有注册过的标签，系统才能认识你，这是固定写法
 register = template.Library()
@@ -22,16 +23,23 @@ def get_query_sets(admin_class):
 def build_table_row(request,obj,admin_class):
     row_ele = ""
     for index,column in enumerate(admin_class.list_display):
-        field_obj = obj._meta.get_field(column) #获取数据
-        if field_obj.choices: #判断是否为空
-            column_data = getattr(obj,"get_%s_display"%(column))() #解决tbody中source显示数字的问题
-        else:
-            column_data = getattr(obj,column)
-        if type(column_data).__name__ == "datetime": #处理时间的显示
-             column_data = column_data.strftime("%Y-%m-%d %H:%M:%S")
-        if index == 0: #add a tag, 可以跳转到修改页
-            column_data = '<a href="{request_path}{obj_id}/change/">{data}</a>'\
-                .format(request_path=request.path,obj_id=obj.id,data=column_data)
+        try:
+            field_obj = obj._meta.get_field(column) #获取数据
+            if field_obj.choices: #判断是否为空
+                column_data = getattr(obj,"get_%s_display"%(column))() #解决tbody中source显示数字的问题
+            else:
+                column_data = getattr(obj,column)
+            if type(column_data).__name__ == "datetime": #处理时间的显示
+                column_data = column_data.strftime("%Y-%m-%d %H:%M:%S")
+            if index == 0: #add a tag,可以跳转到修改页
+                column_data = '<a href="{request_path}{obj_id}/change/">{data}</a>'\
+                    .format(request_path=request.path,obj_id=obj.id,data=column_data)
+        except FieldDoesNotExist as e:
+            if hasattr(admin_class,column):
+                column_func = getattr(admin_class,column)
+                admin_class.instance = obj
+                admin_class.request = request
+                column_data = column_func()
         row_ele += "<td>%s</td>"%(column_data)
     return mark_safe(row_ele)
 
@@ -63,7 +71,7 @@ def build_paginators(query_sets,filter_condtions,previous_orderby):
                 added_dot_ele = True
     return mark_safe(page_btns)
 
-#信息检索选项栏
+#信息检索选项栏内容展示
 @register.simple_tag
 def render_filter_ele(filter_field,admin_class,filter_condtions):
     #select_ele = ''' <select class="form-control" name='%s'><option value=''>----</options> ''' %filter_field
@@ -108,7 +116,7 @@ def render_filter_ele(filter_field,admin_class,filter_condtions):
     return mark_safe(select_ele)
 #排序
 @register.simple_tag
-def build_table_header_column(column,orderby_key,filter_condtions):
+def build_table_header_column(column,orderby_key,filter_condtions,admin_class):
     ele = '''<th><a href="?{filters}&o={orderby_key}">{column}</a>{sort_icon}</th>'''
     filters = ''
     for k, v in filter_condtions.items():
@@ -126,7 +134,12 @@ def build_table_header_column(column,orderby_key,filter_condtions):
     else:
         orderby_key = column
         sort_icon = ''
-    ele = ele.format(orderby_key=orderby_key,filters=filters,column=column,sort_icon=sort_icon)# 格式化
+    try:
+        column_verbose_name = admin_class.model._meta.get_field(column).verbose_name.upper()
+    except FieldDoesNotExist as e: #把循环未找到的字段抛出异常特殊处理
+        column_verbose_name = getattr(admin_class,column).display_name.upper()
+        ele = '''<th><a href="javascript:void()">{column}</a></th>'''
+    ele = ele.format(orderby_key=orderby_key,filters=filters,column=column_verbose_name,sort_icon=sort_icon)# 格式化
     return mark_safe(ele)
 #路径显示
 @register.simple_tag

@@ -1,7 +1,14 @@
 {% extends "index.html" %}
 {% block page-content %}
     客户库
+    <div id="content"></div>
 {% endblock %}
-
+{% block bottom-js %}
+    <script>
+        $(document).ready(function(){
+            $("#content").load("/king_admin/crm/customer/"); //页面链接跳转
+        })
+    </script>
+{% endblock %}
 
 

@@ -1,10 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.models import (
+    BaseUserManager,AbstractBaseUser,PermissionsMixin
+)
+from django.utils.translation import gettext_lazy as _
+from django.utils.safestring import mark_safe
 # Create your models here.
 
 class Customer(models.Model):
     ''' 客户信息表 '''
-    name = models.CharField(max_length=32,blank=True,null=True) #blank=True 使用Django-admin时要使用
+    name = models.CharField(max_length=32,blank=True,null=True,help_text="用户报名后请改为真实姓名") #blank=True 使用Django-admin时要使用
     qq = models.CharField(max_length=64,unique=True)
     qq_name = models.CharField(max_length=64,blank=True,null=True)
     phone = models.CharField(max_length=64,blank=True,null=True)
@@ -14,14 +19,15 @@ class Customer(models.Model):
                       (3,'百度推广'),
                       (4,'51CTO'),
                       (5,'知乎'),
-                      (6,'市场推广'))
-    source = models.SmallIntegerField(choices=source_choices)
+                      (6,'市场推广'),
+                      (7,'未知来源'))
+    source = models.SmallIntegerField(choices=source_choices,default=7)
     referral_from = models.CharField(verbose_name="转介绍人qq",max_length=64,blank=True,null=True)
     consult_course = models.ForeignKey("Course",verbose_name="咨询课程",on_delete=models.CASCADE)
     content = models.TextField(verbose_name="咨询详情")
     tags = models.ManyToManyField("Tag",blank=True,null=True)
     status_choices = ((0,'已报名'),(1,'未报名'),)
-    status = models.SmallIntegerField(choices=status_choices)
+    status = models.SmallIntegerField(choices=status_choices,default=1)
     consultant = models.ForeignKey("UserProfile", on_delete=models.CASCADE)
     memo = models.TextField(blank=True,null=True)           #备注
     date = models.DateTimeField(auto_now_add=True)
@@ -50,8 +56,9 @@ class CustomerFollowUp(models.Model):
                          (1,'1个月内报名'),
                          (2,'近期无报名计划'),
                          (3,'已在其它机构报名'),
-                         (4,'已报名'))
-    intention = models.SmallIntegerField(choices=intention_choices)
+                         (4,'已报名'),
+                         (5,'未报名'))
+    intention = models.SmallIntegerField(choices=intention_choices,default=5)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return "<%s : %s>"%(self.customer.qq,self.intention)
@@ -86,7 +93,7 @@ class ClassList(models.Model):
     branch = models.ForeignKey("Branch",verbose_name="分校",on_delete=models.CASCADE)
     course = models.ForeignKey("Course",on_delete=models.CASCADE)
     class_type_choices = ((0,'面授(脱产)'),(1,'面授(周末)'),(2,'网络班'))
-    class_type = models.SmallIntegerField(choices=class_type_choices,verbose_name="班级类型")
+    class_type = models.SmallIntegerField(choices=class_type_choices,verbose_name="班级类型",default=None)
     semester = models.PositiveSmallIntegerField(verbose_name="学期")
     teacher = models.ManyToManyField("UserProfile")
     start_date = models.DateField(verbose_name="开班日期")
@@ -160,14 +167,6 @@ class Payment(models.Model):
     class Meta:
         verbose_name_plural = "缴费记录"
 
-class UserProfile(models.Model):
-    ''' 账号表 '''
-    user = models.OneToOneField(User,on_delete=models.CASCADE)
-    name = models.CharField(max_length=32)
-    roles = models.ManyToManyField("Role",blank=True,null=True)
-    def __str__(self):
-        return self.name
-
 class Role(models.Model):
     ''' 角色表 '''
     name = models.CharField(max_length=32,unique=True)
@@ -180,9 +179,97 @@ class Role(models.Model):
 class Menu(models.Model):
     ''' 菜单 '''
     name = models.CharField(max_length=32)
+    url_type_choices = ((0,'alias'),(1,'adsolute_url'))
+    url_type = models.SmallIntegerField(choices=url_type_choices,default=0)
     url_name = models.CharField(max_length=64)
     def __str__(self):
         return self.name
+
+class UserProfileManager(BaseUserManager):
+    def create_user(self, email, name, password=None):
+        """
+        Creates and saves a User with the given email, date of
+        birth and password.
+        """
+        if not email:
+            raise ValueError('Users must have an email address')
+
+        user = self.model(
+            email=self.normalize_email(email),
+            name=name,
+        )
+
+        user.set_password(password)
+        self.is_active = True
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self,email, name, password):
+        """
+        Creates and saves a superuser with the given email, date of
+        birth and password.
+        """
+        user = self.create_user(
+            email,
+            password=password,
+            name=name,
+        )
+        user.is_active = True
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
+
+# class UserProfile(models.Model):
+#     ''' 账号表 '''
+#     user = models.OneToOneField(User,on_delete=models.CASCADE)
+#     name = models.CharField(max_length=32)
+#     roles = models.ManyToManyField("Role",blank=True,null=True)
+#     def __str__(self):
+#         return self.name
+
+class UserProfile(AbstractBaseUser,PermissionsMixin):
+    email = models.EmailField(
+        verbose_name = 'email address',
+        max_length=255,
+        unique=True,
+        null=True,
+    )
+    name = models.CharField(max_length=32)
+    password=models.CharField(_('password'),max_length=128,help_text=mark_safe('''<a href='password/'>修改密码</a>'''))
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+
+    objects = UserProfileManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
+
+    def get_full_name(self):
+        # The user is identified by their email address
+        return self.email
+
+    def get_short_name(self):
+        # The user is identified by their email address
+        return self.email
+
+    def __str__(self):              # __unicode__ on Python 2
+        return self.email
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_staff(self):
+        " Is the user a member of staff? "
+        # Simplest possible answer: All admins are staff
+        return self.is_admin
 
 
 
