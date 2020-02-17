@@ -114,6 +114,7 @@ admin.site.register(models.Payment)
 admin.site.register(models.StudyRecord)
 admin.site.register(models.Tag)
 admin.site.register(models.Menu)
+admin.site.register(models.ContractTemplate)
 
 
 
