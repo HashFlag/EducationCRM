@@ -33,9 +33,15 @@ class EnrollmentFrom(ModelForm):
         model = models.Enrollment
         fields = ['enrolled_class','consultant']
 
-
-
-
+class PaymentForm(ModelForm):
+    def __new__(cls, *args, **kwargs):
+        # base_fields是一个字典,关于前端样式的
+        for field_name, field_obj in cls.base_fields.items():
+            field_obj.widget.attrs['class'] = 'form-control'
+        return ModelForm.__new__(cls)  # 相当于继承
+    class Meta:
+        model = models.Payment
+        fields = "__all__"
 
 
 

@@ -57,7 +57,11 @@ class CustomerAdmin(BaseAdmin):
     #         self.add_error("name","cannot be null")
     def enroll(self):
         # print("enroll",self.instance)
-        return '''<a href="/crm/customer/%s/enrollment/">报名</a>'''%self.instance.id
+        if self.instance.status == 0:
+            link_name = "报名新课程"
+        else:
+            link_name = "报名"
+        return '''<a href="/crm/customer/%s/enrollment/">%s</a>'''%(self.instance.id,link_name)
     enroll.display_name = "报名链接"
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer','consultant','date']
