@@ -1,8 +1,9 @@
-#author:wylkjj
-#date:2020/2/17
-#-*- coding:utf-8 -*-
+# author:wylkjj
+# date:2020/2/17
+# -*- coding:utf-8 -*-
 from django import template
 register = template.Library()
+
 
 @register.simple_tag
 def render_enroll_contract(enroll_obj):

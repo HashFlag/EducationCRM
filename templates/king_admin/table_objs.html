@@ -36,7 +36,7 @@
                           <select id="action_list" name="action" class="form-control">
                               <option value="">-----</option>
                               {% for action in admin_class.actions %}
-                                  <option value="{{ action }}">{{ action }}</option>
+                                  <option value="{{ action }}">{% get_action_verbose_name admin_class action %}</option>
                               {% endfor %}
                           </select>
                       </div>
