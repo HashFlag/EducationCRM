@@ -136,5 +136,10 @@ STATICFILES_DIRS = [
 AUTH_USER_MODEL = 'crm.UserProfile'
 # 设置页面返回路径的默认值如果不设置默认返回：/accounts/login/
 LOGIN_URL = "/account/login/"
+# 照片上传动态路径
+ENROLLED_DATA = "%s/enrolled_data" % (BASE_DIR, )
+# 作业上传动态路径
+HOMEWORK_DATA = "%s/homeworks/" % (BASE_DIR, )
 
-ENROLLED_DATA = "%s/enrolled_data" % (BASE_DIR,)
+
+

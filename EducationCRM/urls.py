@@ -5,6 +5,7 @@ from EducationCRM import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.index),
     path('crm/', include("crm.urls")),
     path('account/login/', views.acc_login),
     path('account/logout/', views.acc_logout, name="acc_logout"),

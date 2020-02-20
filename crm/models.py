@@ -133,9 +133,9 @@ class ClassList(models.Model):
 
 class CourseRecord(models.Model):
     """ 上课记录表 """
-    from_class = models.ForeignKey("ClassList",verbose_name="班级", on_delete=models.CASCADE)
+    from_class = models.ForeignKey("ClassList", verbose_name="班级", on_delete=models.CASCADE)
     day_num = models.PositiveSmallIntegerField(verbose_name="第几节(天)")
-    teacher = models.ForeignKey("UserProfile",on_delete=models.CASCADE)
+    teacher = models.ForeignKey("UserProfile", on_delete=models.CASCADE)
     has_homework = models.BooleanField(default=True)
     homework_title = models.CharField(max_length=128, blank=True, null=True)
     homework_content = models.TextField(blank=True, null=True)
@@ -149,12 +149,13 @@ class CourseRecord(models.Model):
         unique_together = ('from_class', 'day_num')
         verbose_name = "上课记录"
         verbose_name_plural = "上课记录"
+        ordering = ['id']
 
 
 class StudyRecord(models.Model):
     """ 学习记录 """
-    student = models.ForeignKey("Enrollment",on_delete=models.CASCADE)
-    course_record = models.ForeignKey("CourseRecord",on_delete=models.CASCADE)
+    student = models.ForeignKey("Enrollment", on_delete=models.CASCADE)
+    course_record = models.ForeignKey("CourseRecord", on_delete=models.CASCADE)
     attendance_choices = ((0, '已签到'), (1, '迟到'), (2, '缺勤'), (3, '早退'),)  # 出勤
     attendance = models.SmallIntegerField(choices=attendance_choices, default=0)
     score_choices = ((100, "A+"), (90, "A"),
@@ -173,6 +174,7 @@ class StudyRecord(models.Model):
         unique_together = ('student', 'course_record')
         verbose_name = "学习记录"
         verbose_name_plural = "学习记录"
+        ordering = ['id']
 
 
 class Enrollment(models.Model):
@@ -298,6 +300,9 @@ class UserProfile(AbstractBaseUser,PermissionsMixin):
 
     objects = UserProfileManager()
 
+    stu_account = models.ForeignKey("Customer", verbose_name="关联学员账号",
+                                    blank=True, null=True, on_delete=models.CASCADE,
+                                    help_text="只有学员报名后才可为其创建账户")
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']
 

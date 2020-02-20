@@ -74,6 +74,7 @@ class CustomerAdmin(BaseAdmin):
 
 class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ['customer', 'consultant', 'date']
+    list_per_page = 10
 
 
 class UserProfileAdmin(BaseAdmin):
@@ -81,32 +82,35 @@ class UserProfileAdmin(BaseAdmin):
     search_fields = ['name']
     readonly_fields = ['password']
     modelform_exclude_fields = ['last_login']
+    list_per_page = 10
 
 
 class CourseRecordAdmin(BaseAdmin):
     list_display = ['from_class', 'day_num', 'teacher', 'has_homework', 'homework_title', 'date']
     actions = ["delete_seleted_objs", 'initialize_studyrecords']
+    list_per_page = 10
 
     def initialize_studyrecords(self, request, queryset):
         # print("--->self request queryset", self, request, queryset)
         if len(queryset) > 1:
             return HttpResponse("只能选择一个班级")
-        # print(queryset[0].from_class.enrollment_set.all()) #表的反向查询_set
-
+        # print(queryset[0].from_class.enrollment_set.all())  # 表的反向查询_set
+        new_obj_list = []
         for enroll_obj in queryset[0].from_class.enrollment_set.all():
-            new_obj_list = list()
             new_obj_list.append(models.StudyRecord(
                 student=enroll_obj,
                 course_record=queryset[0],
                 attendance=0,
                 score=0,
             ))
-            # 批量创建数据，如果数据已被创建，返回会报错，数据数量不对也会直接报错
-            try:
-                models.StudyRecord.objects.bulk_create(new_obj_list)
-            except Exception as e:
-                return HttpResponse("批量初始化记录失败,请检查是否已经存在对应的学习记录!")
-            return redirect("/king_admin/crm/studyrecord/?course_record=%s" % (queryset[0].id))
+        # 批量创建数据，如果数据已被创建，返回会报错，数据数量不对也会直接报错
+        try:
+            for i in new_obj_list:
+                print(i)
+            models.StudyRecord.objects.bulk_create(new_obj_list)
+        except Exception as e:
+            return HttpResponse("批量初始化记录失败,请检查是否已经存在对应的学习记录!")
+        return redirect("/king_admin/crm/studyrecord/?course_record=%s" % (queryset[0].id))
     # short_description在admin中显示的字段
     initialize_studyrecords.display_name = "初始化本节课所有学员的上课记录"
 
@@ -114,7 +118,7 @@ class CourseRecordAdmin(BaseAdmin):
 class StudyRecordAdmin(BaseAdmin):
     list_display = ['student', 'course_record', 'attendance', 'score', 'date']
     list_filters = ['course_record', 'score', 'attendance']
-    actions = ["delete_seleted_objs"]
+    list_per_page = 10
 
 
 def register(model_class, admin_class=None):

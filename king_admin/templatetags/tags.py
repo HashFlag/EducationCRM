@@ -3,7 +3,8 @@
 # -*- coding:utf-8 -*-
 from django import template
 from django.utils.safestring import mark_safe
-from django.utils.timezone import datetime,timedelta
+from django.utils.timezone import datetime
+from django.utils.timezone import timedelta
 from django.core.exceptions import FieldDoesNotExist
 # timezone表示使用此软件的时间
 # 注册我们自定义的标签，只有注册过的标签，系统才能认识你，这是固定写法

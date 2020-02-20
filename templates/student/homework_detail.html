@@ -1,0 +1,94 @@
+{% extends "index.html" %}
+{% load stu_tags %}
+{% block page-content %}
+    <h3></h3>
+<div class="panel panel-default">
+<!-- Default panel contents -->
+    <div class="panel-heading">班级:{{ studyrecord_obj.student.enrolled_class }}  | 节次{{ studyrecord_obj.course_record.day_num }}</div>
+    <div class="panel-body">
+        <div class="panel-body">
+            <div class="form-group">
+                <h4>作业标题:{{ studyrecord_obj.course_record.homework_title }}</h4>
+                <hr>
+                <h4>作业详情：
+                    <h3></h3>
+                    <pre>{{ studyrecord_obj.course_record.homework_content }}</pre></h4>
+                <hr>
+                <h4>老师评语:{{ studyrecord_obj.memo }}</h4>
+                <hr>
+                <h4>本节成绩:{{ studyrecord_obj.score }}</h4>
+                <hr>
+                <h4>作业上传：</h4>
+                <h4>已上传作业:</h4>
+                <div>
+                    <ul>
+                        {% for file in file_lists %}
+                        <li>{{ file.0 }} | {{ file.1 }} | {{ file.2 }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <form action="{{ request.path }}" id="filedropzone" class="dropzone dz-clickable" method="post">{% csrf_token %}
+                    <div class="dz-default dz-message">
+                        <div class="dz-icon icon-wrap icon-circle icon-wrap-md">
+                            <i class="fa fa-cloud-upload fa-3x"></i>
+                        </div>
+                        <div>
+                            <p class="dz-text">把作业信息拖到这里</p>
+                            <p class="text-muted">最多可上传2张图片</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom-js %}
+<script>
+    $(document).ready(function () {
+        Dropzone.options.filedropzone = {
+            url:"{{ request.path }}",
+            paramName: "file", // The name that will be used to transfer the file
+            maxFilesize: 1, // MB,
+            addRemoveLinks:true,
+            maxFiles:5,
+            uploadMultiple:true,
+            accept: function(file, done) {
+                console.log("file.name", file.name);
+                if (! file.name.endsWith(".zip") ) {
+                    alert("只能上传.zip格式的压缩包");
+                    done("文件为上传");
+                    myDropzone.removeFile(file);
+                }
+                else { done(); }
+            }
+        };
+
+        Dropzone.autoDiscover = false;
+        myDropzone = new Dropzone("#filedropzone");
+        myDropzone.on("addedfile", function(file) {
+            /* Maybe display some more file information on your page */
+            console.log("-------", file)
+        });
+        myDropzone.on("success", function(file,response) {
+          /* Maybe display some more file information on your page */
+          console.log('filex upload done...', response);
+        });
+    });
+
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

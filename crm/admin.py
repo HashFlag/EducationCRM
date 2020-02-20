@@ -12,7 +12,7 @@ from crm import models
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'qq', 'source', 'consultant', 'content', 'status', 'date')
+    list_display = ('id', 'qq', 'name', 'source', 'consultant', 'content', 'status', 'date')
     list_filter = ('source', 'consultant', 'date')  # 单项选择，列向展示，筛选，过滤，给出提示
     search_fields = ('qq', 'name')  # 设置查询功能
     raw_id_fields = ('consult_course',)  # 以ID的形式显示咨询课程
@@ -38,7 +38,7 @@ class CourseRecordAdmin(admin.ModelAdmin):
         if len(queryset) > 1:
             return HttpResponse("只能选择一个班级")
         # print(queryset[0].from_class.enrollment_set.all()) #表的反向查询_set
-
+        new_obj_list = []
         for enroll_obj in queryset[0].from_class.enrollment_set.all():
             # get_or_create()如果有就取数据，没有就创建数据
             # models.StudyRecord.objects.get_or_create( #（低效率）
@@ -47,27 +47,25 @@ class CourseRecordAdmin(admin.ModelAdmin):
             #     attendance=0,
             #     score=0,
             # )
-            new_obj_list = list()
             new_obj_list.append(models.StudyRecord(
                 student=enroll_obj,
                 course_record=queryset[0],
                 attendance=0,
                 score=0,
             ))
-            # 批量创建数据，如果数据已被创建，返回会报错，数据数量不对也会直接报错
-            try:
-                models.StudyRecord.objects.bulk_create(new_obj_list)
-
-            except Exception as e:
-                return HttpResponse("批量初始化记录失败,请检查是否已经存在对应的学习记录!")
-            return redirect("/admin/crm/studyrecord/?course_record__id__exact=%s" % (queryset[0].id))
+        # 批量创建数据，如果数据已被创建，返回会报错，数据数量不对也会直接报错
+        try:
+            models.StudyRecord.objects.bulk_create(new_obj_list)
+        except Exception as e:
+            return HttpResponse("批量初始化记录失败,请检查是否已经存在对应的学习记录!")
+        return redirect("/admin/crm/studyrecord/?course_record__id__exact=%s" % (queryset[0].id))
     # short_description在admin中显示的字段
     initialize_studyrecords.short_description = "初始化本节课所有学员的上课记录"
 
 
 class StudyRecordAdmin(admin.ModelAdmin):
     list_display = ('student', 'course_record', 'attendance', 'score', 'date')
-    list_filter = ('course_record', 'score', 'attendance')
+    list_filter = ('course_record', 'score', 'attendance', 'course_record__from_class', 'student')
     list_editable = ('score', 'attendance')
 
 
@@ -128,7 +126,7 @@ class UserProfileAdmin(BaseUserAdmin):
     list_filter = ('is_admin',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal', {'fields': ('name', 'roles')}),
+        ('Personal', {'fields': ('name', 'stu_account', 'roles')}),
         ('Permissions', {'fields': ('is_active', 'is_admin', 'user_permissions', 'groups')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin

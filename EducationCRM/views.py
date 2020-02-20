@@ -24,3 +24,9 @@ def acc_logout(request):
     return redirect("/account/login/")
 
 
+def index(request):
+    return render(request, "index.html")
+
+
+
+
