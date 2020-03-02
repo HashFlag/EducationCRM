@@ -29,8 +29,8 @@ def display_table_objs(request, app_name, table_name):
             actions_func = getattr(admin_class, action)
             request._admin_action = action
             return actions_func(admin_class, request, selected_objs)
-    object_list,filter_condtions = table_filter(request, admin_class)
-    object_list,orderby_key = table_sort(request, admin_class, object_list)  # 排序后的结果
+    object_list, filter_condtions = table_filter(request, admin_class)
+    object_list, orderby_key = table_sort(request, admin_class, object_list)  # 排序后的结果
     # Django 内置的分页器Paginator(数据集合，显示条数)
     object_list = table_search(request, admin_class, object_list)
     paginator = Paginator(object_list, admin_class.list_per_page)
