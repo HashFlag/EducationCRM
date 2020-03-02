@@ -43,4 +43,21 @@ Django框架，mysql数据库，还有部分插件，python3.7，bootstrap3模�
 
 #### 项目展示
 
-1. 用户登录页面
+1.  用户登录页面
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204012_c9d8e5fb_2221473.jpeg "crm1.JPG")
+
+2.  销售首页
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204108_cb8bd978_2221473.jpeg "crm2.JPG")
+
+3.  客户库页面
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204145_eb5d39ed_2221473.jpeg "crm3.JPG")
+
+3.1 添加客户
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204301_89f1b343_2221473.jpeg "crm5.JPG")
+
+3.2 删除客户
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204445_4977e4ed_2221473.jpeg "crm6.JPG")
+
+3.3 课程报名
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204613_1829aec9_2221473.jpeg "crm7.JPG")
+
