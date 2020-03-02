@@ -61,3 +61,22 @@ Django框架，mysql数据库，还有部分插件，python3.7，bootstrap3模�
 3.3 课程报名
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204613_1829aec9_2221473.jpeg "crm7.JPG")
 
+3.4 生成报名链接
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204739_51d965ec_2221473.jpeg "crm8.JPG")
+
+3.5 合同审核
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204842_f3fbdbfe_2221473.jpeg "crm9.JPG")
+
+3.6 缴费信息
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/204953_2676adda_2221473.jpeg "crm10.JPG")
+
+4.1 学员课程首页
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205250_9429deba_2221473.jpeg "crm11.JPG")
+
+4.2 作业管理
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205411_9b2f329a_2221473.jpeg "crm12.JPG")
+
+4.3 作业详情
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205610_86fe5cb8_2221473.jpeg "crm13.JPG")
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205620_80c00034_2221473.jpeg "crm14.JPG")
