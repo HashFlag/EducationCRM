@@ -80,3 +80,8 @@ Django框架，mysql数据库，还有部分插件，python3.7，bootstrap3模�
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205610_86fe5cb8_2221473.jpeg "crm13.JPG")
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205620_80c00034_2221473.jpeg "crm14.JPG")
+
+4.4 学院报名表
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205908_da7d60cf_2221473.jpeg "crm15.JPG")
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0302/205918_fcf63eb6_2221473.jpeg "crm16.JPG")
